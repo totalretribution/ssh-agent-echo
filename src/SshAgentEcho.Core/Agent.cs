@@ -37,10 +37,7 @@ public class Agent : IEnumerable<Agent.Identity>
         }
     }
 
-
-
     public IReadOnlyList<Identity> GetIdentities() => _identities.ToList();
-
 
     public Identity? Next()
     {

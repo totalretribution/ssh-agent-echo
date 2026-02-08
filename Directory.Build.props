@@ -2,4 +2,9 @@
   <PropertyGroup>
     <Version>0.1.0</Version>
   </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="$(MSBuildThisFileDirectory)Assets\**\*.*">
+      <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </AvaloniaResource>
+  </ItemGroup>
 </Project>

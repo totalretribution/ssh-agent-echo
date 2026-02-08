@@ -45,7 +45,7 @@ class Program
 
              bool isSync = parseResult.GetValue(syncOption);
              bool isForce = parseResult.GetValue(forceOption);
-             if (isSync)
+             if (isSync || isForce)
              {
                  var syncAgent = new SyncAgent();
                  syncAgent.Sync(isForce);
