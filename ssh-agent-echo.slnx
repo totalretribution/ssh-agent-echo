@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj" />
+    <Project Path="src/SshAgentEcho.Core/SshAgentEcho.Core.csproj" />
+    <Project Path="src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj" />
+  </Folder>
+</Solution>
