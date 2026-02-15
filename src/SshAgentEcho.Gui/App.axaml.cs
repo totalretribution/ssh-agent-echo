@@ -34,11 +34,14 @@ public partial class App : Application {
 
             _syncService.Start();
 
-            // _settingsWindow = new SettingsWindow();
-            // _settingsWindow.Closed += (_, _) => {
-            //     _settingsWindow = null;
-            // };
-            // _settingsWindow.Show();
+#if DEBUG
+            // For debugging, open the settings window immediately
+            _settingsWindow = new SettingsWindow(_syncService);
+            _settingsWindow.Closed += (_, _) => {
+                _settingsWindow = null;
+            };
+            _settingsWindow.Show();
+#endif
 
         }
     }
@@ -58,7 +61,7 @@ public partial class App : Application {
             return;
         }
 
-        _settingsWindow = new SettingsWindow();
+        _settingsWindow = new SettingsWindow(_syncService);
         _settingsWindow.Closed += (_, _) => {
             _settingsWindow = null;
         };

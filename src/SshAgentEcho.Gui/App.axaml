@@ -1,32 +1,34 @@
 <Application xmlns="https://github.com/avaloniaui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  x:Class="SshAgentEcho.Gui.App"
-  RequestedThemeVariant="Default"
-  xmlns:vm="using:SshAgentEcho.Gui.ViewModels"
-  x:DataType="vm:TrayViewModel">
-  <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available
-  options. -->
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:semi="https://irihi.tech/semi"
+             x:Class="SshAgentEcho.Gui.App"
+             RequestedThemeVariant="Default"
+             xmlns:vm="using:SshAgentEcho.Gui.ViewModels"
+             x:DataType="vm:TrayViewModel">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available
+    options. -->
 
-  <Application.Styles>
-    <FluentTheme />
-  </Application.Styles>
-  <TrayIcon.Icons>
-    <TrayIcons>
-      <TrayIcon Icon="/Assets/icon.png"
-        ToolTipText="{Binding TooltipText}">
-        <TrayIcon.Menu>
-          <NativeMenu>
-            <NativeMenuItem IsEnabled="False" Header="{Binding StatusText}" />
-            <NativeMenuItemSeparator />
-            <NativeMenuItem Command="{Binding SyncCommand}" Header="Sync" />
-            <NativeMenuItem Command="{Binding StartCommand}" Header="Start" />
-            <NativeMenuItem Command="{Binding StopCommand}" Header="Stop" />
-            <NativeMenuItem Header="Settings" Click="Settings_Click" />
-            <NativeMenuItemSeparator />
-            <NativeMenuItem Header="Exit" Click="Exit_Click" />
-          </NativeMenu>
-        </TrayIcon.Menu>
-      </TrayIcon>
-    </TrayIcons>
-  </TrayIcon.Icons>
+    <Application.Styles>
+        <!-- <FluentTheme /> -->
+        <semi:SemiTheme />
+    </Application.Styles>
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/icon.png"
+                      ToolTipText="{Binding TooltipText}">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem IsEnabled="False" Header="{Binding StatusText}" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Command="{Binding SyncCommand}" Header="Sync" />
+                        <NativeMenuItem Command="{Binding StartCommand}" Header="Start" />
+                        <NativeMenuItem Command="{Binding StopCommand}" Header="Stop" />
+                        <NativeMenuItem Header="Settings" Click="Settings_Click" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="Exit" Click="Exit_Click" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>
