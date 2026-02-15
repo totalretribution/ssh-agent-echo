@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
 
+using SshAgentEcho.Gui.Services;
+
 namespace SshAgentEcho.Gui.ViewModels {
 
     public partial class TrayViewModel : ObservableObject {

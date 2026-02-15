@@ -124,15 +124,12 @@
                                                    FontWeight="Bold"
                                                    Foreground="#FFFFFF" />
 
-                                        <TextBox Grid.Row="1"
+                                        <ListBox Grid.Row="1"
+                                                 ItemsSource="{Binding LogEntries}"
                                                  HorizontalAlignment="Stretch"
                                                  VerticalAlignment="Stretch"
-                                                 AcceptsReturn="True"
-                                                 IsReadOnly="True"
-                                                 TextWrapping="Wrap"
                                                  Background="#1B1B1B"
-                                                 Foreground="#D0D0D0"
-                                                 Text=""/>
+                                                 Foreground="#D0D0D0" />
                                 </Grid>
                         </Border>
                 </Grid>

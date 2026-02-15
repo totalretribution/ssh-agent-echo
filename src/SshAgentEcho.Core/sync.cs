@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace SshAgentEcho.Core {
     public class SyncAgent {
         public void Sync(bool force = false) {
@@ -10,7 +12,7 @@ namespace SshAgentEcho.Core {
 
             if (!force && saved_crc_hash != null) {
                 if (saved_crc_hash == new_crc_hash) {
-                    Console.WriteLine("No changes detected, skipping sync.");
+                    Trace.WriteLine("No changes detected, skipping sync.");
                     return;
                 }
             }

@@ -1,7 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+
+using SshAgentEcho.Gui.Services;
 
 namespace SshAgentEcho.Gui.ViewModels {
 
@@ -20,6 +23,8 @@ namespace SshAgentEcho.Gui.ViewModels {
 
         [ObservableProperty]
         private string? statusText;
+
+        public ObservableCollection<string> LogEntries => LogService.Instance.LogEntries;
 
         public MainViewModel(SyncService syncService) {
             _syncService = syncService;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Renci.SshNet;
 using SshNet.Agent;
+using System.Diagnostics;
 
 namespace SshAgentEcho.Core;
 
@@ -26,7 +27,7 @@ public class Agent : IEnumerable<Agent.Identity> {
 
     public void PrintIdentities() {
         foreach (var identity in _identities) {
-            Console.WriteLine(identity);
+            Trace.WriteLine(identity);
         }
     }
 
@@ -118,7 +119,7 @@ public class Agent : IEnumerable<Agent.Identity> {
     }
 
     private void PopulateIdentities() {
-        Console.WriteLine("Querying SSH agent for identities...");
+        Trace.WriteLine("Querying SSH agent for identities...");
         this._identities.Clear();
         _cursor = -1;
         try {
@@ -142,7 +143,7 @@ public class Agent : IEnumerable<Agent.Identity> {
                 this._identities.Add(identity);
             }
         } catch (Exception ex) {
-            Console.WriteLine($"Error querying SSH agent: {ex.Message}");
+            Trace.WriteLine($"Error querying SSH agent: {ex.Message}");
         }
     }
 }

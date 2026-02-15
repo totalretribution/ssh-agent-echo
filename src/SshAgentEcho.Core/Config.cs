@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.IO.Enumeration;
 using System.Security.Cryptography;
@@ -20,23 +21,23 @@ public class Config {
     private static readonly string _sshConfigIncludeDirective = $"Include {_sshConfigFilePath}";
 
     public Config() {
-        Console.WriteLine("Using the following ssh config paths:");
-        Console.WriteLine($"  -  SSH Directory: {_sshDirectory}");
-        Console.WriteLine($"  -  SSH Base Config File Path: {_sshBaseConfigFilePath}");
-        Console.WriteLine($"  -  SSH Config File Path: {_sshConfigFilePath}");
-        Console.WriteLine($"  -  SSH Config Key Folder Path: {_sshConfigKeyFolderPath}");
-        Console.WriteLine($"  -  SSH Config Include Directive: {_sshConfigIncludeDirective}");
+        Trace.WriteLine("Using the following ssh config paths:");
+        Trace.WriteLine($"  -  SSH Directory: {_sshDirectory}");
+        Trace.WriteLine($"  -  SSH Base Config File Path: {_sshBaseConfigFilePath}");
+        Trace.WriteLine($"  -  SSH Config File Path: {_sshConfigFilePath}");
+        Trace.WriteLine($"  -  SSH Config Key Folder Path: {_sshConfigKeyFolderPath}");
+        Trace.WriteLine($"  -  SSH Config Include Directive: {_sshConfigIncludeDirective}");
     }
 
     public string? GetCrcConfigHash() {
-        Console.WriteLine($"Checking for existing CRC hash in config file at {_sshConfigFilePath}");
+        Trace.WriteLine($"Checking for existing CRC hash in config file at {_sshConfigFilePath}");
         if (!File.Exists(_sshConfigFilePath)) return null;
 
         foreach (var line in File.ReadLines(_sshConfigFilePath)) {
             if (line.StartsWith(SSH_AGENT_SYNC_CRC_PREFIX, StringComparison.Ordinal)) {
                 string crc = line;
                 crc = crc.Substring(SSH_AGENT_SYNC_CRC_PREFIX.Length).Trim();
-                Console.WriteLine($"Found existing CRC hash in config: {crc}");
+                Trace.WriteLine($"Found existing CRC hash in config: {crc}");
                 return crc;
             }
         }
@@ -58,7 +59,7 @@ public class Config {
         byte[] hashBytes = sha256.GetHashAndReset();
         string hashString = Convert.ToHexString(hashBytes);
         string hash = hashString.ToUpper();
-        Console.WriteLine($"Generated CRC hash: {hash}");
+        Trace.WriteLine($"Generated CRC hash: {hash}");
         return hash;
     }
 
@@ -82,7 +83,7 @@ public class Config {
     }
 
     public string GenerateConfigFileContent(List<Agent.Identity> identities, string crc_hash) {
-        Console.WriteLine($"Generating config file.");
+        Trace.WriteLine($"Generating config file.");
         String config = SSH_AGENT_SYNC_CRC_PREFIX + crc_hash + "\n\n";
         config += "Host *\n    IdentitiesOnly yes\n\n";
 
@@ -96,22 +97,22 @@ public class Config {
         string configFile = GenerateConfigFileContent(identities, crc_hash);
 
         if (File.Exists(_sshConfigFilePath)) {
-            Console.WriteLine($"Deleting existing config file at {_sshConfigFilePath}");
+            Trace.WriteLine($"Deleting existing config file at {_sshConfigFilePath}");
             File.Delete(_sshConfigFilePath);
         }
-        Console.WriteLine($"Writing new config file to {_sshConfigFilePath}");
+        Trace.WriteLine($"Writing new config file to {_sshConfigFilePath}");
         File.WriteAllText(_sshConfigFilePath, configFile);
     }
 
     public void DeleteKeyFolder() {
         if (Directory.Exists(_sshConfigKeyFolderPath)) {
-            Console.WriteLine($"Deleting existing key folder at {_sshConfigKeyFolderPath}");
+            Trace.WriteLine($"Deleting existing key folder at {_sshConfigKeyFolderPath}");
             Directory.Delete(_sshConfigKeyFolderPath, true);
         }
     }
 
     public void GenerateKeyFiles(List<Agent.Identity> identities) {
-        Console.WriteLine($"Generating key files in {_sshConfigKeyFolderPath}");
+        Trace.WriteLine($"Generating key files in {_sshConfigKeyFolderPath}");
         DeleteKeyFolder();
         Directory.CreateDirectory(_sshConfigKeyFolderPath);
 
@@ -120,22 +121,22 @@ public class Config {
             string key_content = $"{identity.Type} {identity.Hash} {identity.Comment}";
             if (!File.Exists(key_path)) {
                 File.WriteAllText(key_path, key_content);
-                Console.WriteLine($"Created key file: {key_path}");
+                Trace.WriteLine($"Created key file: {key_path}");
             }
         }
     }
 
     public bool CheckBaseConfigNeedsEditing() {
-        Console.WriteLine($"Checking base config file {_sshBaseConfigFilePath}");
+        Trace.WriteLine($"Checking base config file {_sshBaseConfigFilePath}");
 
         if (!File.Exists(_sshBaseConfigFilePath)) {
-            Console.WriteLine($"Base config file does not exist, will need to create new one.");
+            Trace.WriteLine($"Base config file does not exist, will need to create new one.");
             return true;
         }
 
         foreach (var line in File.ReadLines(_sshBaseConfigFilePath)) {
             if (line.Trim() == _sshConfigIncludeDirective) {
-                Console.WriteLine($"Base config file already includes the directive, no edit needed.");
+                Trace.WriteLine($"Base config file already includes the directive, no edit needed.");
                 return false;
             }
         }
@@ -147,7 +148,7 @@ public class Config {
         if (!CheckBaseConfigNeedsEditing()) {
             return false;
         }
-        Console.WriteLine($"Adding include directive to base config file at {_sshBaseConfigFilePath}");
+        Trace.WriteLine($"Adding include directive to base config file at {_sshBaseConfigFilePath}");
         var current_config_file = _sshConfigIncludeDirective + "\n\n";
         current_config_file += File.Exists(_sshBaseConfigFilePath) ? File.ReadAllText(_sshBaseConfigFilePath) : "";
         File.WriteAllText(_sshBaseConfigFilePath, current_config_file);

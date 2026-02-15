@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using SshAgentEcho.Gui.Services;
 using SshAgentEcho.Gui.ViewModels;
 
 namespace SshAgentEcho.Gui;

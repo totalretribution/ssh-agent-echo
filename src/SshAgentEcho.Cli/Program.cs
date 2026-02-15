@@ -3,9 +3,13 @@ using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using SshAgentEcho.Core;
 using System.Reflection;
+using System.Diagnostics;
 
 class Program {
     static int Main(string[] args) {
+        Trace.Listeners.Clear();
+        Trace.Listeners.Add(new ConsoleTraceListener());
+
         Option<bool> printOption = new("--print") {
             Description = "Print keys like ssh-add -L"
         };
