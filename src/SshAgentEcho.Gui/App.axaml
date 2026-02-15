@@ -1,7 +1,9 @@
 <Application xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   x:Class="SshAgentEcho.Gui.App"
-  RequestedThemeVariant="Default">
+  RequestedThemeVariant="Default"
+  xmlns:vm="using:SshAgentEcho.Gui.ViewModels"
+  x:DataType="vm:TrayViewModel">
   <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available
   options. -->
 
@@ -11,11 +13,16 @@
   <TrayIcon.Icons>
     <TrayIcons>
       <TrayIcon Icon="/Assets/icon.png"
-        ToolTipText="Avalonia Tray Icon ToolTip">
+        ToolTipText="{Binding TooltipText}">
         <TrayIcon.Menu>
           <NativeMenu>
-            <NativeMenuItem Header="Sync" Click="Sync_Click" />
+            <NativeMenuItem IsEnabled="False" Header="{Binding StatusText}" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Command="{Binding SyncCommand}" Header="Sync" />
+            <NativeMenuItem Command="{Binding StartCommand}" Header="Start" />
+            <NativeMenuItem Command="{Binding StopCommand}" Header="Stop" />
             <NativeMenuItem Header="Settings" Click="Settings_Click" />
+            <NativeMenuItemSeparator />
             <NativeMenuItem Header="Exit" Click="Exit_Click" />
           </NativeMenu>
         </TrayIcon.Menu>
