@@ -13,7 +13,6 @@ namespace SshAgentEcho.Gui;
 
 public partial class App : Application {
     private SettingsWindow? _settingsWindow;
-    private MainWindow? _mainWindow;
     private readonly SyncService _syncService = new();
 
     public override void Initialize() {
@@ -35,6 +34,12 @@ public partial class App : Application {
 
             _syncService.Start();
 
+            // _settingsWindow = new SettingsWindow();
+            // _settingsWindow.Closed += (_, _) => {
+            //     _settingsWindow = null;
+            // };
+            // _settingsWindow.Show();
+
         }
     }
 
@@ -47,27 +52,14 @@ public partial class App : Application {
         Console.WriteLine("Application is exiting");
     }
 
-    private void TrayIcon_Clicked(object? sender, EventArgs e) {
-        if (_mainWindow?.IsVisible == true) {
-            _mainWindow.Activate();
-            return;
-        }
-    }
-
-    private void TrayIcon_DoubleClicked(object? sender, EventArgs e) {
-    }
-
     private void Settings_Click(object? sender, EventArgs e) {
         if (_settingsWindow?.IsVisible == true) {
             _settingsWindow.Activate();
             return;
         }
 
-        // disable the tray "Settings" item while the Settings window is open
-        // SettingsMenuItem?.IsEnabled = false;
         _settingsWindow = new SettingsWindow();
         _settingsWindow.Closed += (_, _) => {
-            // SettingsMenuItem?.IsEnabled = true;
             _settingsWindow = null;
         };
         _settingsWindow.Show();
