@@ -20,8 +20,8 @@ EOF
 
 build_linux() {
   echo "🔧 Building Linux (linux-x64)..."
-  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
-  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
+  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
+  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
 
   dest="./.publish/linux"
   mkdir -p "$dest"
@@ -42,8 +42,8 @@ build_linux() {
 
 build_windows() {
   echo "🔧 Building Windows (win-x64)..."
-  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
-  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
+  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
+  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
 
   dest="./.publish/windows"
   mkdir -p "$dest"
