@@ -22,8 +22,6 @@ namespace SshAgentEcho.Gui.Services {
         private Task? _periodicTask;
         private TimeSpan _interval = TimeSpan.FromMinutes(30);
 
-        // private volatile bool _enabled = true;
-
         public void Start() {
             if (_periodicTask != null)
                 return;
@@ -36,26 +34,17 @@ namespace SshAgentEcho.Gui.Services {
             Start();
         }
 
-        public void Enable() {
-            // _enabled = true;
-        }
-
-        public void Disable() {
-            // _enabled = false;
-        }
-
-
         public async Task StopAsync() {
             if (_periodicTask == null)
                 return;
             try {
-                // Signal the periodic background sync task to stop.
+                // Signal the background task to stop.
                 _cancellationToken?.Cancel();
 
                 // Wait up to 5 seconds for the background task to finish cleanly.
                 await Task.WhenAny(_periodicTask ?? Task.CompletedTask, Task.Delay(TimeSpan.FromSeconds(5)));
             } catch {
-                // Catch exceptions during shutdown  and ignore to avoid messing with exit.
+                // Catch exceptions during shutdown and ignore to avoid messing with exit.
             } finally {
                 // Dispose and clear the CancellationTokenSource to free resources.
                 _cancellationToken?.Dispose();
@@ -104,7 +93,25 @@ namespace SshAgentEcho.Gui.Services {
         }
 
         public void Sync() {
-
+            _ = Task.Run(async () => {
+                var serviceWasRunning = _periodicTask != null;
+                try {
+                    if (serviceWasRunning) {
+                        await StopAsync().ConfigureAwait(false);
+                    }
+                    RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
+                    var syncAgent = new SyncAgent();
+                    syncAgent.Sync();
+                } catch {
+                    RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Error });
+                } finally {
+                    if (serviceWasRunning) {
+                        Start();
+                    } else {
+                        RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
+                    }
+                }
+            });
         }
 
         public void SetInterval(int interval) {
@@ -114,7 +121,7 @@ namespace SshAgentEcho.Gui.Services {
         private async Task SyncTask(CancellationToken ct) {
             Debug.WriteLine("SyncTask: Starting periodic sync task");
             RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
-            using var timer = new PeriodicTimer(_interval);
+            var timer = new PeriodicTimer(_interval);
             while (await timer.WaitForNextTickAsync(ct)) {
                 RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
                 Debug.WriteLine("SyncTask: Starting sync operation");
