@@ -15,6 +15,7 @@
                         <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
@@ -107,8 +108,35 @@
                                 </Grid>
                         </Border>
 
-                        <!-- Log Section -->
+                        <!-- Start At Boot Settings Card -->
                         <Border Grid.Row="2" Background="#2A2A2A"
+                                CornerRadius="8"
+                                Padding="16">
+                                <Grid
+                                ColumnSpacing="12"
+                                VerticalAlignment="Center">
+
+                                        <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="Start at boot"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="#CCCCCC" />
+
+                                        <CheckBox Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding IsStartAtBootEnabled}" />
+
+                                        <!-- Spacer column -->
+                                        <Border Grid.Column="2" />
+                                </Grid>
+                        </Border>
+
+                        <!-- Log Section -->
+                        <Border Grid.Row="3" Background="#2A2A2A"
                                 CornerRadius="8"
                                 Padding="12">
 

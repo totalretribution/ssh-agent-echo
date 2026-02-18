@@ -5,12 +5,16 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 using SshAgentEcho.Gui.Services;
+using SshAgentEcho.Autostart;
+using System.Reflection;
 
 namespace SshAgentEcho.Gui.ViewModels {
 
     public partial class MainViewModel : ObservableObject {
         private readonly SyncService _syncService;
         public SyncService SyncService => _syncService;
+
+        private readonly IAutostartService _autostartService;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SyncCommand))]
@@ -26,8 +30,31 @@ namespace SshAgentEcho.Gui.ViewModels {
 
         public ObservableCollection<string> LogEntries => LogService.Instance.LogEntries;
 
+        [ObservableProperty]
+        private bool isStartAtBootEnabled;
+
+        partial void OnIsStartAtBootEnabledChanged(bool value) {
+            if (value) {
+                if (_autostartService.Install()) {
+                    SetProperty(ref isStartAtBootEnabled, true, nameof(IsStartAtBootEnabled));
+                } else {
+                    SetProperty(ref isStartAtBootEnabled, false, nameof(IsStartAtBootEnabled));
+                }
+            } else {
+                if (_autostartService.Uninstall()) {
+                    SetProperty(ref isStartAtBootEnabled, false, nameof(IsStartAtBootEnabled));
+                } else {
+                    SetProperty(ref isStartAtBootEnabled, true, nameof(IsStartAtBootEnabled));
+                }
+            }
+        }
+
         public MainViewModel(SyncService syncService) {
             _syncService = syncService;
+            var appName = Assembly.GetExecutingAssembly().GetName().Name ?? "";
+            _autostartService = AutostartServiceFactory.Create(appName);
+            isStartAtBootEnabled = _autostartService.IsInstalled();
+
             // Subscribe to your service's event
             _syncService.StatusChanged += OnSyncStatusChanged;
             AllowManualSync = _syncService.Status == SyncServiceArgs.SyncStatus.Running;
