@@ -65,13 +65,6 @@ jobs:
           name: ${{ matrix.platform }}-binaries
           path: ${{ matrix.artifact }}
 
-      - name: Upload artifact (PR)
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: pr-${{ github.event.pull_request.number }}-${{ matrix.platform }}-binaries
-          path: ${{ matrix.artifact }}
-
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
