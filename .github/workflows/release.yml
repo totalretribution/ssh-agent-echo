@@ -16,7 +16,7 @@ jobs:
                 include:
                     - os: ubuntu-latest
                       platform: linux
-                      script: bash ./build.sh linux
+                      script: ./build.sh linux
                       artifact: ssh-agent-echo-linux-x64.tar.gz
                     - os: windows-latest
                       platform: windows
@@ -36,6 +36,10 @@ jobs:
 
             - name: Restore dependencies
               run: dotnet restore
+
+            - name: Make build script executable (Linux)
+              if: matrix.platform == 'linux'
+              run: chmod +x ./build.sh
 
             - name: Build binaries
               shell: bash
