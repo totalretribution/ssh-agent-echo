@@ -14,18 +14,13 @@ namespace SshAgentEcho.Autostart {
             _launchAgentsDirectory = Path.Combine(home, "Library", "LaunchAgents");
         }
 
-        private static string GetExecutablePath() {
-            // mimic Windows implementation which uses the executing assembly location
-            return Assembly.GetExecutingAssembly().Location;
-        }
-
         private string PlistFilePath(string appName) => Path.Combine(_launchAgentsDirectory, $"com.{appName}.plist");
 
         public bool Install() {
             try {
                 Directory.CreateDirectory(_launchAgentsDirectory);
 
-                var exec = GetExecutablePath();
+                var exec = ((IAutostartService)this).GetExecutablePath();
                 var plist = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                                 <!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
                                 <plist version=""1.0"">
@@ -76,7 +71,7 @@ namespace SshAgentEcho.Autostart {
                 if (!File.Exists(path)) return false;
 
                 var content = File.ReadAllText(path);
-                var exec = GetExecutablePath();
+                var exec = ((IAutostartService)this).GetExecutablePath();
                 return content.Contains($"<string>{exec}</string>");
             } catch {
                 return false;

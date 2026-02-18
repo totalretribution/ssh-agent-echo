@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.Win32;
 
 namespace SshAgentEcho.Autostart {
@@ -15,7 +17,7 @@ namespace SshAgentEcho.Autostart {
             try {
                 using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath, true);
                 if (key == null) return false;
-                var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                var executablePath = ((IAutostartService)this).GetExecutablePath();
                 key.SetValue(_appName, $"\"{executablePath}\"");
                 return true;
             } catch {
@@ -41,11 +43,12 @@ namespace SshAgentEcho.Autostart {
                 if (key == null) return false;
                 var value = key.GetValue(_appName) as string;
                 if (string.IsNullOrEmpty(value)) return false;
-                var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                return value.Trim('"') == executablePath;
+                var executablePath = ((IAutostartService)this).GetExecutablePath();
+                return value.Trim('\"') == executablePath;
             } catch {
                 return false;
             }
         }
+
     }
 }

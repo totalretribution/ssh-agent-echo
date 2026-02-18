@@ -8,6 +8,8 @@ namespace SshAgentEcho.Gui;
 public partial class SettingsWindow : Window {
     SyncService _syncService = new();
 
+    public SettingsWindow() : this(new SyncService()) { }
+
     public SettingsWindow(SyncService syncService) {
         _syncService = syncService;
         InitializeComponent();
