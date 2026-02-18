@@ -16,7 +16,7 @@ jobs:
                 include:
                     - os: ubuntu-latest
                       platform: linux
-                      script: ./build.sh linux
+                      script: bash ./build.sh linux
                       artifact: ssh-agent-echo-linux-x64.tar.gz
                     - os: windows-latest
                       platform: windows
