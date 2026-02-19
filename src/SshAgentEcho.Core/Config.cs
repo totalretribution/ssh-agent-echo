@@ -8,9 +8,9 @@ namespace SshAgentEcho.Core;
 
 public class Config {
     private const string SSH_AGENT_SYNC_CRC_PREFIX = "### SSH_AGENT_SYNC_CRC=";
-    private const string SSH_CONFIG_FILE_NAME = "config.ssh_agent_sync";
+    private const string SSH_CONFIG_FILE_NAME = "config.ssh_agent_echo";
     private const string SSH_DIR_NAME = ".ssh";
-    private const string SSH_CONFIG_KEY_FOLDER = "ssh_agent_sync";
+    private const string SSH_CONFIG_KEY_FOLDER = "ssh_agent_echo";
     private const string SSH_BASE_CONFIG_FILE_NAME = "config";
 
     private static readonly string _homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
