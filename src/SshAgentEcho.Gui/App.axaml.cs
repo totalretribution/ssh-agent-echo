@@ -22,15 +22,19 @@ public partial class App : Application {
 
     public override void OnFrameworkInitializationCompleted() {
         Trace.Listeners.Clear();
-        Trace.Listeners.Add(new DebugListener()); // Custom listener writes to LogService
         Trace.Listeners.Add(new DefaultTraceListener()); // Optional: keep default listener for Debug output
+
+        Log.CoreSource.Listeners.Clear();
+        Log.CoreSource.Listeners.Add(new CleanStringListener());
+        Log.CoreSource.Listeners.Add(new CleanDebugListener()); // Custom listener writes to LogService
+        Log.CoreSource.Switch = new SourceSwitch("coreSwitch", "All");
 
         // Start without showing a main window so the app runs in the tray only.
         // Windows (like Settings) will be created on demand when the user opens them.
         base.OnFrameworkInitializationCompleted();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-            Debug.WriteLine("Application started");
+            Log.Info("Application started");
             desktop.Exit += OnExit;
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -55,9 +59,9 @@ public partial class App : Application {
         try {
             _syncService.Dispose();
         } catch (Exception ex) {
-            Console.WriteLine($"Error during OnExit disposing SyncService: {ex}");
+            Log.Error($"Error during OnExit disposing SyncService: {ex}");
         }
-        Console.WriteLine("Application is exiting");
+        Log.Info("Application is exiting");
     }
 
     private void Settings_Click(object? sender, EventArgs e) {

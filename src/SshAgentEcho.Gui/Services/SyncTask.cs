@@ -119,18 +119,18 @@ namespace SshAgentEcho.Gui.Services {
         }
 
         private async Task SyncTask(CancellationToken ct) {
-            Debug.WriteLine("SyncTask: Starting periodic sync task");
+            Log.Info("SyncTask: Starting periodic sync task");
             RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
             var timer = new PeriodicTimer(_interval);
             while (await timer.WaitForNextTickAsync(ct)) {
                 RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
-                Debug.WriteLine("SyncTask: Starting sync operation");
+                Log.Info("SyncTask: Starting sync operation");
                 var syncAgent = new SyncAgent();
                 syncAgent.Sync();
-                Debug.WriteLine("SyncTask: Finished sync operation");
+                Log.Info("SyncTask: Finished sync operation");
                 RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
             }
-            Debug.WriteLine("SyncTask: Exiting periodic sync task");
+            Log.Info("SyncTask: Exiting periodic sync task");
             RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
         }
 

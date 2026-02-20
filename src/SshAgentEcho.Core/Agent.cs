@@ -27,7 +27,7 @@ public class Agent : IEnumerable<Agent.Identity> {
 
     public void PrintIdentities() {
         foreach (var identity in _identities) {
-            Trace.WriteLine(identity);
+            Log.Info(identity);
         }
     }
 
@@ -138,14 +138,14 @@ public class Agent : IEnumerable<Agent.Identity> {
     }
 
     private void PopulateIdentities() {
-        Trace.WriteLine("Querying SSH agent for identities...");
+        Log.Info("Querying SSH agent for identities...");
         this._identities.Clear();
         _cursor = -1;
         try {
             var agentIdentities = RequestIdentities();
 
             if (agentIdentities == null) {
-                Trace.WriteLine("No identities found or failed to retrieve identities from SSH agent.");
+                Log.Warning("No identities found or failed to retrieve identities from SSH agent.");
                 return;
             }
 
@@ -165,7 +165,7 @@ public class Agent : IEnumerable<Agent.Identity> {
                 this._identities.Add(identity);
             }
         } catch (Exception ex) {
-            Trace.WriteLine($"Error querying SSH agent: {ex.Message}");
+            Log.Error($"Error querying SSH agent: {ex.Message}");
         }
     }
 }

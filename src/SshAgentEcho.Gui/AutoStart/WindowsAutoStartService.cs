@@ -13,7 +13,7 @@ namespace SshAgentEcho.Autostart {
         }
 
         public bool Install() {
-            Debug.WriteLine("Attempting to install autostart registry key");
+            Log.Info("Attempting to install autostart registry key");
             try {
                 using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath, true);
                 if (key == null) return false;
@@ -26,7 +26,7 @@ namespace SshAgentEcho.Autostart {
         }
 
         public bool Uninstall() {
-            Debug.WriteLine("Attempting to uninstall autostart registry key");
+            Log.Info("Attempting to uninstall autostart registry key");
             try {
                 using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath, true);
                 if (key == null) return false;

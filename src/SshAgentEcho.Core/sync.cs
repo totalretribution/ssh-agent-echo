@@ -12,7 +12,7 @@ namespace SshAgentEcho.Core {
 
             if (!force && saved_crc_hash != null) {
                 if (saved_crc_hash == new_crc_hash) {
-                    Trace.WriteLine("No changes detected, skipping sync.");
+                    Log.Info("No changes detected, skipping sync.");
                     return;
                 }
             }
