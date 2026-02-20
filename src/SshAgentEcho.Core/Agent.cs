@@ -144,7 +144,6 @@ public class Agent : IEnumerable<Agent.Identity> {
         try {
             var agentIdentities = RequestIdentities();
 
-            // var agentIdentities = agent.RequestIdentities();
             if (agentIdentities == null) {
                 Trace.WriteLine("No identities found or failed to retrieve identities from SSH agent.");
                 return;
