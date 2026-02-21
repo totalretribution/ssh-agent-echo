@@ -14,7 +14,7 @@
     </Application.Styles>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/icon.png"
+            <TrayIcon Icon="../../Assets/icon.ico"
                       ToolTipText="{Binding TooltipText}"
                       Clicked="Settings_Click">
                 <TrayIcon.Menu>
