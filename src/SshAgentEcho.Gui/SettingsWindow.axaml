@@ -4,7 +4,7 @@
         xmlns:vm="using:SshAgentEcho.Gui.ViewModels"
         x:DataType="vm:MainViewModel"
         Title="ssh-agent-echo"
-        Icon="/Assets/icon.png"
+        Icon="../../Assets/icon.ico"
         MinWidth="600"
         MinHeight="600"
         Width="600"
