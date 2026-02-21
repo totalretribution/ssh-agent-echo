@@ -27,7 +27,7 @@ public class Agent : IEnumerable<Agent.Identity> {
 
     public void PrintIdentities() {
         foreach (var identity in _identities) {
-            Trace.WriteLine(identity);
+            Log.Info(identity);
         }
     }
 
@@ -118,14 +118,36 @@ public class Agent : IEnumerable<Agent.Identity> {
         return filename;
     }
 
+    private SshAgentPrivateKey[]? RequestIdentities() {
+        var agent = new SshAgent();
+
+        try {
+            return Task
+                .Run(() => agent.RequestIdentities())
+                .WaitAsync(TimeSpan.FromMinutes(3))
+                .GetAwaiter()
+                .GetResult();
+        } catch (TimeoutException) {
+            // Handle the fact that the agent is ghosting you
+            Console.WriteLine("SSH Agent failed to respond within the timeout.");
+        } catch (Exception ex) {
+            // Handle other potential connection/SSH errors
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        return null;
+    }
+
     private void PopulateIdentities() {
-        Trace.WriteLine("Querying SSH agent for identities...");
+        Log.Info("Querying SSH agent for identities...");
         this._identities.Clear();
         _cursor = -1;
         try {
-            var agent = new SshAgent();
-            var agentIdentities = agent.RequestIdentities();
-            if (agentIdentities == null) return;
+            var agentIdentities = RequestIdentities();
+
+            if (agentIdentities == null) {
+                Log.Warning("No identities found or failed to retrieve identities from SSH agent.");
+                return;
+            }
 
             foreach (var id in agentIdentities) {
                 var hash = GetOpenSshKey(id);
@@ -143,7 +165,7 @@ public class Agent : IEnumerable<Agent.Identity> {
                 this._identities.Add(identity);
             }
         } catch (Exception ex) {
-            Trace.WriteLine($"Error querying SSH agent: {ex.Message}");
+            Log.Error($"Error querying SSH agent: {ex.Message}");
         }
     }
 }
