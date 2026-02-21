@@ -21,12 +21,12 @@ public class Config {
     private static readonly string _sshConfigIncludeDirective = $"Include {_sshConfigFilePath}";
 
     public Config() {
-        Log.Info("Using the following ssh config paths:");
-        Log.Info($"  -  SSH Directory: {_sshDirectory}");
-        Log.Info($"  -  SSH Base Config File Path: {_sshBaseConfigFilePath}");
-        Log.Info($"  -  SSH Config File Path: {_sshConfigFilePath}");
-        Log.Info($"  -  SSH Config Key Folder Path: {_sshConfigKeyFolderPath}");
-        Log.Info($"  -  SSH Config Include Directive: {_sshConfigIncludeDirective}");
+        // Log.Info("Using the following ssh config paths:");
+        // Log.Info($"  -  SSH Directory: {_sshDirectory}");
+        // Log.Info($"  -  SSH Base Config File Path: {_sshBaseConfigFilePath}");
+        // Log.Info($"  -  SSH Config File Path: {_sshConfigFilePath}");
+        // Log.Info($"  -  SSH Config Key Folder Path: {_sshConfigKeyFolderPath}");
+        // Log.Info($"  -  SSH Config Include Directive: {_sshConfigIncludeDirective}");
     }
 
     public string? GetCrcConfigHash() {
@@ -68,6 +68,7 @@ public class Config {
         string entry = "";
 
         if (!string.IsNullOrEmpty(identity.Name)) {
+            Log.Info($"Adding config entry for identity name: {identity.Name}");
             entry += $"Host {identity.Name}\n";
             entry += $"    HostName {identity.Host}\n";
             entry += $"    User {identity.User}\n";
@@ -75,6 +76,7 @@ public class Config {
             entry += "    IdentitiesOnly yes\n\n";
         }
 
+        Log.Info($"Adding config entry for identity host: {identity.Host}");
         entry += $"Host {identity.Host}\n";
         entry += $"    User {identity.User}\n";
         entry += $"    IdentityFile {key_path}\n";
