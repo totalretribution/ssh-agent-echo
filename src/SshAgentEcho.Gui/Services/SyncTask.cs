@@ -96,7 +96,7 @@ namespace SshAgentEcho.Gui.Services {
                     }
                     RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
                     var syncAgent = new SyncAgent();
-                    syncAgent.Sync();
+                    syncAgent.Sync(true);
                 } catch {
                     RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Error });
                 } finally {
