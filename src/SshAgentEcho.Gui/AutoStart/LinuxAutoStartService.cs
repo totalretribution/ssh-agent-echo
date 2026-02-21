@@ -15,18 +15,13 @@ namespace SshAgentEcho.Autostart {
             _unitDirectory = Path.Combine(home, ".config", "systemd", "user");
         }
 
-        private static string GetExecutablePath() {
-            // mimic Windows implementation which uses the executing assembly location
-            return Assembly.GetExecutingAssembly().Location;
-        }
-
         private string UnitFilePath(string appName) => Path.Combine(_unitDirectory, $"{appName}.service");
 
         public bool Install() {
             try {
                 Directory.CreateDirectory(_unitDirectory);
 
-                var exec = GetExecutablePath();
+                var exec = ((IAutostartService)this).GetExecutablePath();
                 var quotedExec = exec.Contains(" ") ? $"\"{exec}\"" : exec;
 
                 var unit = $"[Unit]\nDescription={_appName}\n\n[Service]\nType=simple\nExecStart={quotedExec}\nRestart=no\n\n[Install]\nWantedBy=default.target\n";
@@ -64,7 +59,7 @@ namespace SshAgentEcho.Autostart {
                 if (!File.Exists(path)) return false;
 
                 var content = File.ReadAllText(path);
-                var exec = GetExecutablePath();
+                var exec = ((IAutostartService)this).GetExecutablePath();
                 return content.Contains($"ExecStart={exec}") || content.Contains($"ExecStart=\"{exec}\"");
             } catch {
                 return false;

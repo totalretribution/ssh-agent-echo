@@ -13,8 +13,11 @@ using SshAgentEcho.Gui.ViewModels;
 namespace SshAgentEcho.Gui;
 
 public partial class App : Application {
+
     private SettingsWindow? _settingsWindow;
     private readonly SyncService _syncService = new();
+    private TrayViewModel? _trayViewModel;
+    private MainViewModel? _mainViewModel;
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
@@ -22,26 +25,34 @@ public partial class App : Application {
 
     public override void OnFrameworkInitializationCompleted() {
         Trace.Listeners.Clear();
-        Trace.Listeners.Add(new DebugListener()); // Custom listener writes to LogService
         Trace.Listeners.Add(new DefaultTraceListener()); // Optional: keep default listener for Debug output
+
+        Log.CoreSource.Listeners.Clear();
+        Log.CoreSource.Listeners.Add(new CleanStringListener());
+        Log.CoreSource.Listeners.Add(new CleanDebugListener()); // Custom listener writes to LogService
+        Log.CoreSource.Switch = new SourceSwitch("coreSwitch", "All");
 
         // Start without showing a main window so the app runs in the tray only.
         // Windows (like Settings) will be created on demand when the user opens them.
         base.OnFrameworkInitializationCompleted();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-            Debug.WriteLine("Application started");
+            Log.Info("Application started");
             desktop.Exit += OnExit;
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var trayViewModel = new TrayViewModel(_syncService); // Pass the SyncService to the ViewModel.
-            DataContext = trayViewModel;
+            _trayViewModel = new TrayViewModel(_syncService); // Pass the SyncService to the ViewModel.
+            DataContext = _trayViewModel;
 
+            AppSettings settingsService = new AppSettings();
+            _mainViewModel = new MainViewModel(_syncService, settingsService);
+
+            _syncService.SetInterval(settingsService.Current.SyncIntervalMinutes);
             _syncService.Start();
 
 #if DEBUG
             // For debugging, open the settings window immediately
-            _settingsWindow = new SettingsWindow(_syncService);
+            _settingsWindow = new SettingsWindow(_mainViewModel);
             _settingsWindow.Closed += (_, _) => {
                 _settingsWindow = null;
             };
@@ -55,9 +66,9 @@ public partial class App : Application {
         try {
             _syncService.Dispose();
         } catch (Exception ex) {
-            Console.WriteLine($"Error during OnExit disposing SyncService: {ex}");
+            Log.Error($"Error during OnExit disposing SyncService: {ex}");
         }
-        Console.WriteLine("Application is exiting");
+        Log.Info("Application is exiting");
     }
 
     private void Settings_Click(object? sender, EventArgs e) {
@@ -66,11 +77,13 @@ public partial class App : Application {
             return;
         }
 
-        _settingsWindow = new SettingsWindow(_syncService);
-        _settingsWindow.Closed += (_, _) => {
-            _settingsWindow = null;
-        };
-        _settingsWindow.Show();
+        if (_mainViewModel != null) {
+            _settingsWindow = new SettingsWindow(_mainViewModel);
+            _settingsWindow.Closed += (_, _) => {
+                _settingsWindow = null;
+            };
+            _settingsWindow.Show();
+        }
     }
 
     private void Exit_Click(object? sender, EventArgs e) {

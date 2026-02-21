@@ -44,21 +44,21 @@ namespace SshAgentEcho.Gui.ViewModels {
         [RelayCommand(CanExecute = nameof(CanSync))]
         private void Sync() {
             // Start your thread/background work here
-            Debug.WriteLine("Sync command executed");
+            Log.Info("Sync command executed");
             _syncService.Sync();
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
         private void Start() {
             // Start your thread/background work here
-            Debug.WriteLine("Start command executed");
+            Log.Info("Start command executed");
             _syncService.Start();
         }
 
         [RelayCommand(CanExecute = nameof(CanStop))]
         private void Stop() {
             // Start your thread/background work here
-            Debug.WriteLine("Stop command executed");
+            Log.Info("Stop command executed");
             _syncService.Stop();
         }
 

@@ -8,7 +8,11 @@ using System.Diagnostics;
 class Program {
     static int Main(string[] args) {
         Trace.Listeners.Clear();
-        Trace.Listeners.Add(new ConsoleTraceListener());
+        // Trace.Listeners.Add(new ConsoleTraceListener());
+
+        Log.CoreSource.Listeners.Clear();
+        Log.CoreSource.Listeners.Add(new CleanStringListener());
+        Log.CoreSource.Switch = new SourceSwitch("coreSwitch", "All");
 
         Option<bool> printOption = new("--print") {
             Description = "Print keys like ssh-add -L"
@@ -29,9 +33,13 @@ class Program {
 
         var version = Assembly.GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
-        Console.WriteLine("───────────────────────");
-        Console.WriteLine($" ssh-agent-echo v{version}");
-        Console.WriteLine("───────────────────────\n");
+
+        var title = $"ssh-agent-echo v{version}";
+        var bar = new string('─', title.Length + 2);
+
+        Console.WriteLine(bar);
+        Console.WriteLine($" {title}");
+        Console.WriteLine(bar + "\n");
 
         rootCommand.SetAction(parseResult => {
             bool isVerbose = parseResult.GetValue(printOption);
