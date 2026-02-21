@@ -15,7 +15,8 @@
     <TrayIcon.Icons>
         <TrayIcons>
             <TrayIcon Icon="/Assets/icon.png"
-                      ToolTipText="{Binding TooltipText}">
+                      ToolTipText="{Binding TooltipText}"
+                      Clicked="Settings_Click">
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem IsEnabled="False" Header="{Binding StatusText}" />

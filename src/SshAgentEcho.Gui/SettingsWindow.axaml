@@ -85,19 +85,21 @@
                                                    Foreground="#CCCCCC" />
 
 
-                                        <NumericUpDown Grid.Column="1" Value="10"
-                                                       Text="15"
+                                        <NumericUpDown Grid.Column="1"
                                                        Increment="1"
                                                        FormatString="0 mins"
                                                        Minimum="5"
                                                        Maximum="60"
-                                                       HorizontalContentAlignment="Center" />
+                                                       HorizontalContentAlignment="Center"
+                                                       Value="{Binding SettingsService.Current.SyncIntervalMinutes, Mode=TwoWay}" />
 
                                         <Button Grid.Column="2"
-                                                Content="Reset" />
+                                                Content="Reset"
+                                                Click= "ResetSettings_Click" />
 
                                         <Button Grid.Column="3"
-                                                Content="Save" />
+                                                Content="Save"
+                                                Click="SaveSettings_Click" />
 
                                         <!-- Spacer column -->
                                         <Border Grid.Column="4" />
@@ -157,7 +159,8 @@
                                                  HorizontalAlignment="Stretch"
                                                  VerticalAlignment="Stretch"
                                                  Background="#1B1B1B"
-                                                 Foreground="#D0D0D0" />
+                                                 Foreground="#D0D0D0"
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
                                 </Grid>
                         </Border>
                 </Grid>

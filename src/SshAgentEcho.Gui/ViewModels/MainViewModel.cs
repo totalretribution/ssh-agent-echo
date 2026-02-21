@@ -14,6 +14,8 @@ namespace SshAgentEcho.Gui.ViewModels {
         private readonly SyncService _syncService;
         public SyncService SyncService => _syncService;
 
+        public AppSettings SettingsService { get; }
+
         private readonly IAutostartService _autostartService;
 
         [ObservableProperty]
@@ -49,7 +51,8 @@ namespace SshAgentEcho.Gui.ViewModels {
             }
         }
 
-        public MainViewModel(SyncService syncService) {
+        public MainViewModel(SyncService syncService, AppSettings settingsService) {
+            SettingsService = settingsService;
             _syncService = syncService;
             var appName = Assembly.GetExecutingAssembly().GetName().Name ?? "";
             _autostartService = AutostartServiceFactory.Create(appName);

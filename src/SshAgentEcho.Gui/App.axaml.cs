@@ -13,8 +13,11 @@ using SshAgentEcho.Gui.ViewModels;
 namespace SshAgentEcho.Gui;
 
 public partial class App : Application {
+
     private SettingsWindow? _settingsWindow;
     private readonly SyncService _syncService = new();
+    private TrayViewModel? _trayViewModel;
+    private MainViewModel? _mainViewModel;
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
@@ -38,14 +41,18 @@ public partial class App : Application {
             desktop.Exit += OnExit;
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var trayViewModel = new TrayViewModel(_syncService); // Pass the SyncService to the ViewModel.
-            DataContext = trayViewModel;
+            _trayViewModel = new TrayViewModel(_syncService); // Pass the SyncService to the ViewModel.
+            DataContext = _trayViewModel;
 
+            AppSettings settingsService = new AppSettings();
+            _mainViewModel = new MainViewModel(_syncService, settingsService);
+
+            _syncService.SetInterval(settingsService.Current.SyncIntervalMinutes);
             _syncService.Start();
 
 #if DEBUG
             // For debugging, open the settings window immediately
-            _settingsWindow = new SettingsWindow(_syncService);
+            _settingsWindow = new SettingsWindow(_mainViewModel);
             _settingsWindow.Closed += (_, _) => {
                 _settingsWindow = null;
             };
@@ -70,11 +77,13 @@ public partial class App : Application {
             return;
         }
 
-        _settingsWindow = new SettingsWindow(_syncService);
-        _settingsWindow.Closed += (_, _) => {
-            _settingsWindow = null;
-        };
-        _settingsWindow.Show();
+        if (_mainViewModel != null) {
+            _settingsWindow = new SettingsWindow(_mainViewModel);
+            _settingsWindow.Closed += (_, _) => {
+                _settingsWindow = null;
+            };
+            _settingsWindow.Show();
+        }
     }
 
     private void Exit_Click(object? sender, EventArgs e) {

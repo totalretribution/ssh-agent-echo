@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SshAgentEcho.Gui.Services;
@@ -6,20 +7,29 @@ using SshAgentEcho.Gui.ViewModels;
 namespace SshAgentEcho.Gui;
 
 public partial class SettingsWindow : Window {
-    SyncService _syncService = new();
+    public MainViewModel? _mainViewModel;
 
-    public SettingsWindow() : this(new SyncService()) { }
-
-    public SettingsWindow(SyncService syncService) {
-        _syncService = syncService;
+    public SettingsWindow() {
         InitializeComponent();
+    }
 
-        var mainViewModel = new MainViewModel(_syncService);
-        DataContext = mainViewModel;
-
+    public SettingsWindow(MainViewModel mainViewModel) {
+        InitializeComponent();
+        _mainViewModel = mainViewModel;
+        DataContext = _mainViewModel;
     }
 
     private void Close_Click(object? sender, RoutedEventArgs e) {
         Close();
+    }
+
+    private void SaveSettings_Click(object? sender, RoutedEventArgs e) {
+        if (_mainViewModel == null) return;
+        _mainViewModel.SettingsService.Save();
+        _mainViewModel.SyncService.Restart(_mainViewModel.SettingsService.Current.SyncIntervalMinutes);
+    }
+
+    private void ResetSettings_Click(object? sender, RoutedEventArgs e) {
+        _mainViewModel?.SettingsService.Load();
     }
 }
