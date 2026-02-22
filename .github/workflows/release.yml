@@ -28,36 +28,51 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get Version from Directory.Build.props
+        id: get-version
+        shell: bash
+        run: echo "version=$(grep -oE '<Version>[^<]+' Directory.Build.props | sed 's/<Version>//')" >> $GITHUB_OUTPUT
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: |
+            9.0.x
+            10.0.x
 
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build binaries
+      - name: Build Gui (Linux)
         if: matrix.platform == 'linux'
-        shell: bash
-        run: bash ./build.sh linux
+        run: dotnet publish -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
+
+      - name: Build Cli (Linux)
+        if: matrix.platform == 'linux'
+        run: dotnet publish -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
+
+      - name: Build Gui (Windows)
+        if: matrix.platform == 'windows'
+        run: dotnet publish -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
+
+      - name: Build Cli (Windows)
+        if: matrix.platform == 'windows'
+        run: dotnet publish -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
 
       - name: Package Linux binaries
         if: matrix.platform == 'linux'
         run: |
-          cd .publish/linux
-          tar -czf ../../ssh-agent-echo-linux-x64.tar.gz *
+          tar -czf ssh-agent-echo-linux-x64.tar.gz -C ./publish ssh-agent-echo-gui ssh-agent-echo
 
-      - name: Build (Windows)
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        run: ./build.ps1 windows
-
-      - name: Package Windows binaries
+      - name: Package Windows Binaries
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          cd .publish/windows
-          Compress-Archive -Path * -DestinationPath ../../ssh-agent-echo-windows-x64.zip
+          $files = @(
+            "$PWD/publish/ssh-agent-echo-gui.exe",
+            "$PWD/publish/ssh-agent-echo.exe"
+          )
+          Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-windows.zip" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
