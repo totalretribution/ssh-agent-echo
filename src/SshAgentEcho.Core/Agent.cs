@@ -7,9 +7,12 @@ using System.Diagnostics;
 
 namespace SshAgentEcho.Core;
 
-public class Agent : IEnumerable<Agent.Identity> {
-    public readonly record struct Identity(string Comment, string User, string Host, string? Name, string Hash, string Type, string Filename) {
-        public override string ToString() {
+public class Agent : IEnumerable<Agent.Identity>
+{
+    public readonly record struct Identity(string Comment, string User, string Host, string? Name, string Hash, string Type, string Filename)
+    {
+        public override string ToString()
+        {
             return $"{Type} {Hash} {Comment}";
         }
     }
@@ -17,23 +20,28 @@ public class Agent : IEnumerable<Agent.Identity> {
     private readonly List<Identity> _identities = new();
     private int _cursor = -1;
 
-    public Agent() {
+    public Agent()
+    {
         PopulateIdentities();
     }
 
-    public void Refresh() {
+    public void Refresh()
+    {
         PopulateIdentities();
     }
 
-    public void PrintIdentities() {
-        foreach (var identity in _identities) {
+    public void PrintIdentities()
+    {
+        foreach (var identity in _identities)
+        {
             Log.Info(identity);
         }
     }
 
     public IReadOnlyList<Identity> GetIdentities() => _identities.ToList();
 
-    public Identity? Next() {
+    public Identity? Next()
+    {
         if (_cursor + 1 >= _identities.Count) return null;
         _cursor++;
         return _identities[_cursor];
@@ -44,15 +52,17 @@ public class Agent : IEnumerable<Agent.Identity> {
     public IEnumerator<Identity> GetEnumerator() => _identities.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    private String? GetOpenSshKey(SshAgentPrivateKey? identity) {
+    private String? GetOpenSshKey(SshAgentPrivateKey? identity)
+    {
         if (identity?.Key == null) return null;
+
         var key = identity.Key;
+        var hostKeyAlgorithm = identity.HostKeyAlgorithms.FirstOrDefault();
+        if (hostKeyAlgorithm == null) return null;
 
-        var keyDataProperty = key.GetType().GetProperty("KeyData");
-        if (keyDataProperty == null) return null;
-
-        var keyValue = keyDataProperty.GetValue(key);
+        var keyValue = hostKeyAlgorithm.Data;
         if (keyValue == null) return null;
+
         var publicKeyBlob = keyValue as byte[];
         if (publicKeyBlob == null) return null;
         if (publicKeyBlob.Length == 0) return null;
@@ -60,31 +70,38 @@ public class Agent : IEnumerable<Agent.Identity> {
         return Convert.ToBase64String(publicKeyBlob);
     }
 
-    private string? ExtractChevronContent(string input) {
+    private string? ExtractChevronContent(string input)
+    {
         int start = input.IndexOf('<');
         int end = input.IndexOf('>');
-        if (start >= 0 && end > start) {
+        if (start >= 0 && end > start)
+        {
             return input.Substring(start + 1, end - start - 1);
         }
         return null;
     }
 
-    private (string User, string Host, string? Name)? ProcessComment(string comment) {
+    private (string User, string Host, string? Name)? ProcessComment(string comment)
+    {
         string? user_host = comment.Trim();
         string user = "";
         string host = "";
         string? name = null;
-        if (comment.Contains('<') || comment.Contains('>')) {
+        if (comment.Contains('<') || comment.Contains('>'))
+        {
             // Must have exactly one '<' and one '>'
-            if (comment.Count(c => c == '<') != 1 || comment.Count(c => c == '>') != 1) {
+            if (comment.Count(c => c == '<') != 1 || comment.Count(c => c == '>') != 1)
+            {
                 return null;
             }
             // '>' must come after '<'
-            if (comment.IndexOf('<') > comment.IndexOf('>')) {
+            if (comment.IndexOf('<') > comment.IndexOf('>'))
+            {
                 return null;
             }
             // '<' must not be the first character, the name must be at least 2 characters long.
-            if (comment.IndexOf('<') < 2) {
+            if (comment.IndexOf('<') < 2)
+            {
                 return null;
             }
             user_host = ExtractChevronContent(comment);
@@ -106,11 +123,15 @@ public class Agent : IEnumerable<Agent.Identity> {
         return (user, host, name);
     }
 
-    private string GenerateFileName(string? name, string host) {
+    private string GenerateFileName(string? name, string host)
+    {
         String filename = "";
-        if (!string.IsNullOrEmpty(name)) {
+        if (!string.IsNullOrEmpty(name))
+        {
             filename = name;
-        } else {
+        }
+        else
+        {
             filename = host;
         }
         filename = filename.Replace(".", "_").Replace(" ", "_");
@@ -118,38 +139,48 @@ public class Agent : IEnumerable<Agent.Identity> {
         return filename;
     }
 
-    private SshAgentPrivateKey[]? RequestIdentities() {
+    private SshAgentPrivateKey[]? RequestIdentities()
+    {
         var agent = new SshAgent();
 
-        try {
+        try
+        {
             return Task
                 .Run(() => agent.RequestIdentities())
                 .WaitAsync(TimeSpan.FromMinutes(3))
                 .GetAwaiter()
                 .GetResult();
-        } catch (TimeoutException) {
+        }
+        catch (TimeoutException)
+        {
             // Handle the fact that the agent is ghosting you
             Console.WriteLine("SSH Agent failed to respond within the timeout.");
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             // Handle other potential connection/SSH errors
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
         return null;
     }
 
-    private void PopulateIdentities() {
+    private void PopulateIdentities()
+    {
         Log.Info("Querying SSH agent for identities...");
         this._identities.Clear();
         _cursor = -1;
-        try {
+        try
+        {
             var agentIdentities = RequestIdentities();
 
-            if (agentIdentities == null) {
+            if (agentIdentities == null)
+            {
                 Log.Warning("No identities found or failed to retrieve identities from SSH agent.");
                 return;
             }
 
-            foreach (var id in agentIdentities) {
+            foreach (var id in agentIdentities)
+            {
                 var hash = GetOpenSshKey(id);
                 var type = id?.Key?.ToString();
                 var comment = id?.Key.Comment;
@@ -164,7 +195,9 @@ public class Agent : IEnumerable<Agent.Identity> {
                 var identity = new Identity(Comment: comment, User: user, Host: host, Name: name, Hash: hash, Type: type, Filename: filename);
                 this._identities.Add(identity);
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Log.Error($"Error querying SSH agent: {ex.Message}");
         }
     }
