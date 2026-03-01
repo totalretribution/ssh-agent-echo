@@ -3,6 +3,7 @@
         x:Class="SshAgentEcho.Gui.SettingsWindow"
         xmlns:vm="using:SshAgentEcho.Gui.ViewModels"
         x:DataType="vm:MainViewModel"
+        x:CompileBindings="True"
         Title="ssh-agent-echo"
         Icon="../../Assets/icon.ico"
         MinWidth="600"

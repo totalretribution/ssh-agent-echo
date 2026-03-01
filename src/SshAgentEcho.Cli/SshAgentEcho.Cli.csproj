@@ -15,6 +15,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>..\..\Assets\icon.ico</ApplicationIcon>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
 </Project>

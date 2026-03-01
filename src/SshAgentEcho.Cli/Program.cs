@@ -8,7 +8,7 @@ using System.Diagnostics;
 class Program {
     static int Main(string[] args) {
         Trace.Listeners.Clear();
-        // Trace.Listeners.Add(new ConsoleTraceListener());
+        Trace.Listeners.Add(new ConsoleTraceListener());
 
         Log.CoreSource.Listeners.Clear();
         Log.CoreSource.Listeners.Add(new CleanStringListener());
