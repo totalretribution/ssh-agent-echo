@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="$(MSBuildThisFileDirectory)Assets\**\*.*">
