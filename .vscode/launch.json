@@ -11,6 +11,7 @@
             "preLaunchTask": "build:cli",
             "program": "${workspaceFolder}/src/SshAgentEcho.Cli/bin/Debug/net10.0/ssh-agent-echo.dll",
             "args": [
+                "--update",
                 "--print",
                 "--sync",
                 "--force"
