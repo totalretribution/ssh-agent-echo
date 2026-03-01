@@ -20,7 +20,7 @@ jobs:
             artifact: ssh-agent-echo-linux-x64.tar.gz
           - os: windows-latest
             platform: windows
-            artifact: ssh-agent-echo-windows-x64.zip
+            artifact: ssh-agent-echo-win-x64.zip
 
     runs-on: ${{ matrix.os }}
 
@@ -72,7 +72,7 @@ jobs:
             "$PWD/publish/ssh-agent-echo-gui.exe",
             "$PWD/publish/ssh-agent-echo.exe"
           )
-          Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-windows-x64.zip" -Force
+          Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-win-x64.zip" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -99,6 +99,6 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/linux-binaries/ssh-agent-echo-linux-x64.tar.gz
-            artifacts/windows-binaries/ssh-agent-echo-windows-x64.zip
+            artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
