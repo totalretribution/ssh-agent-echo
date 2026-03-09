@@ -5,32 +5,35 @@ using System.Reflection;
 
 namespace SshAgentEcho.Autostart {
     public class LinuxAutoStartService : IAutostartService {
-        private readonly string _unitDirectory;
+        private readonly string _autostartDirectory;
         private readonly string _appName;
 
         // factory passes appName in codebase; keep constructor to match that usage even though methods take appName.
         public LinuxAutoStartService(string appName) {
             _appName = appName;
-            var home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            _unitDirectory = Path.Combine(home, ".config", "systemd", "user");
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            _autostartDirectory = Path.Combine(home, ".config", "autostart");
         }
 
-        private string UnitFilePath(string appName) => Path.Combine(_unitDirectory, $"{appName}.service");
+        private string DesktopFilePath(string appName) => Path.Combine(_autostartDirectory, $"{appName}.desktop");
 
         public bool Install() {
             try {
-                Directory.CreateDirectory(_unitDirectory);
+                Directory.CreateDirectory(_autostartDirectory);
 
                 var exec = ((IAutostartService)this).GetExecutablePath();
                 var quotedExec = exec.Contains(" ") ? $"\"{exec}\"" : exec;
 
-                var unit = $"[Unit]\nDescription={_appName}\n\n[Service]\nType=simple\nExecStart={quotedExec}\nRestart=no\n\n[Install]\nWantedBy=default.target\n";
+                var desktopFile = $@"
+[Desktop Entry]
+Type=Application
+Name={_appName}
+Exec=sleep 10 &&{quotedExec}
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true";
 
-                File.WriteAllText(UnitFilePath(_appName), unit);
-
-                // reload and enable the user unit (best-effort; swallow failures)
-                RunSystemctl("--user daemon-reload");
-                RunSystemctl($"--user enable {_appName}.service");
+                File.WriteAllText(DesktopFilePath(_appName), desktopFile);
 
                 return true;
             } catch {
@@ -40,13 +43,8 @@ namespace SshAgentEcho.Autostart {
 
         public bool Uninstall() {
             try {
-                // try to disable/remove the unit (best-effort)
-                RunSystemctl($"--user disable --now {_appName}.service");
-
-                var path = UnitFilePath(_appName);
+                var path = DesktopFilePath(_appName);
                 if (File.Exists(path)) File.Delete(path);
-
-                RunSystemctl("--user daemon-reload");
                 return true;
             } catch {
                 return false;
@@ -55,28 +53,10 @@ namespace SshAgentEcho.Autostart {
 
         public bool IsInstalled() {
             try {
-                var path = UnitFilePath(_appName);
-                if (!File.Exists(path)) return false;
-
-                var content = File.ReadAllText(path);
-                var exec = ((IAutostartService)this).GetExecutablePath();
-                return content.Contains($"ExecStart={exec}") || content.Contains($"ExecStart=\"{exec}\"");
+                var path = DesktopFilePath(_appName);
+                return File.Exists(path);
             } catch {
                 return false;
-            }
-        }
-
-        private static void RunSystemctl(string args) {
-            try {
-                using var p = Process.Start(new ProcessStartInfo("systemctl", args) {
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                });
-                p?.WaitForExit(2000);
-            } catch {
-                // ignore - systemctl may not be available in all environments
             }
         }
     }
