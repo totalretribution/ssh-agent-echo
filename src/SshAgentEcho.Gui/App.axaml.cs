@@ -63,11 +63,41 @@ public partial class App : Application {
     }
 
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e) {
+
+        try {
+            // Unsubscribe from events BEFORE disposing to prevent UI updates during shutdown
+            if (_trayViewModel != null) {
+                _trayViewModel.Dispose();
+            }
+        } catch (Exception ex) {
+            Log.Error($"Error unsubscribing from events: {ex}");
+        }
+
+        try {
+            // Unsubscribe from events BEFORE disposing to prevent UI updates during shutdown
+            if (_mainViewModel != null) {
+                _mainViewModel.Dispose();
+            }
+        } catch (Exception ex) {
+            Log.Error($"Error unsubscribing from events: {ex}");
+        }
+
         try {
             _syncService.Dispose();
         } catch (Exception ex) {
             Log.Error($"Error during OnExit disposing SyncService: {ex}");
         }
+
+        try {
+            // Close the settings window if open
+            if (_settingsWindow != null) {
+                _settingsWindow.Close();
+                _settingsWindow = null;
+            }
+        } catch (Exception ex) {
+            Log.Error($"Error closing SettingsWindow during exit: {ex}");
+        }
+
         Log.Info("Application is exiting");
     }
 
