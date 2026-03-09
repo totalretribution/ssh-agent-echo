@@ -48,8 +48,12 @@ namespace SshAgentEcho.Gui.Services {
                 // Catch exceptions during shutdown and ignore to avoid messing with exit.
             } finally {
                 // Dispose and clear the CancellationTokenSource to free resources.
-                _cancellationToken?.Dispose();
-                _cancellationToken = null;
+                try {
+                    _cancellationToken?.Dispose();
+                    _cancellationToken = null;
+                } catch {
+                    // Ignore any exceptions during cancellation token disposal to keep shutdown clean.
+                }
                 _periodicTask = null;
                 RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
             }
@@ -117,16 +121,20 @@ namespace SshAgentEcho.Gui.Services {
             Log.Info("SyncTask: Starting periodic sync task using interval of " + _interval.Minutes + " minutes");
             RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
             var timer = new PeriodicTimer(_interval);
-            while (await timer.WaitForNextTickAsync(ct)) {
-                RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
-                Log.Info("SyncTask: Starting sync operation");
-                var syncAgent = new SyncAgent();
-                syncAgent.Sync();
-                Log.Info("SyncTask: Finished sync operation");
-                RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
+            try {
+                while (await timer.WaitForNextTickAsync(ct)) {
+                    RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Syncing });
+                    Log.Info("SyncTask: Starting sync operation");
+                    var syncAgent = new SyncAgent();
+                    syncAgent.Sync();
+                    Log.Info("SyncTask: Finished sync operation");
+                    RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Running });
+                }
+            } finally {
+                Log.Info("SyncTask: Stopping periodic sync task");
+                timer.Dispose();
+                RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
             }
-            Log.Info("SyncTask: Stopping periodic sync task");
-            RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
         }
 
         public void Dispose() {
@@ -138,10 +146,15 @@ namespace SshAgentEcho.Gui.Services {
             } catch {
                 // Swallow any exception during shutdown to keep application exit clean.
             } finally {
-                _cancellationToken?.Dispose();
-                _cancellationToken = null;
+                try {
+                    _cancellationToken?.Dispose();
+                    _cancellationToken = null;
+                } catch {
+                    // Ignore any errors
+                }
                 _periodicTask = null;
-                RaiseStatus(new SyncServiceArgs { Status = SyncServiceArgs.SyncStatus.Stopped });
+                // Unsubscribe all event listeners to avoid dangling references
+                StatusChanged = null;
             }
         }
 

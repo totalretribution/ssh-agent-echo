@@ -125,5 +125,15 @@ namespace SshAgentEcho.Gui.ViewModels {
                 }
             });
         }
+
+        /*
+        *********************
+        MARK:System Functions
+        *********************
+        */
+        public void Dispose() {
+            // Unsubscribe from events to prevent memory leaks
+            _syncService.StatusChanged -= OnSyncStatusChanged;
+        }
     }
 }
