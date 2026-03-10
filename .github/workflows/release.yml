@@ -85,7 +85,7 @@ jobs:
           nfpm pkg --packager deb --target publish/
           nfpm pkg --packager rpm --target publish/
         env:
-          VERSION: ${{ env.APP_VERSION }}
+          APP_VERSION: ${{ env.APP_VERSION }}
 
       - name: Package Windows Binaries
         if: matrix.platform == 'windows'
@@ -134,7 +134,7 @@ jobs:
           files: |
             artifacts/linux-binaries/ssh-agent-echo-linux-x64.tar.gz
             artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
-            artifacts/linux-binaries/*.deb
-            artifacts/linux-binaries/*.rpm
+            artifacts/linux-binaries/publish/*.deb
+            artifacts/linux-binaries/publish/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
