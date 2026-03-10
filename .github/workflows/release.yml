@@ -72,6 +72,7 @@ jobs:
           sudo mv nfpm /usr/local/bin/
 
       - name: Extract Version
+        if: matrix.platform == 'linux'
         id: get_version
         run: |
           APP_VERSION=$(grep -oPm1 '(?<=<Version>)[^<]+' Directory.Build.props)
