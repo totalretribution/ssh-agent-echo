@@ -99,14 +99,14 @@ jobs:
 
       - name: Upload artifact
         if: matrix.platform == 'windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-binaries
           path: ${{ matrix.artifact }}
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-binaries
           path: |
