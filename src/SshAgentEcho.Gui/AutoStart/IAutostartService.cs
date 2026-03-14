@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace SshAgentEcho.Autostart {
+namespace SshAgentEcho.Gui.Autostart {
     public interface IAutostartService {
         bool Install();
         bool Uninstall();

@@ -122,6 +122,8 @@
                                         <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
@@ -135,6 +137,15 @@
 
                                         <!-- Spacer column -->
                                         <Border Grid.Column="2" />
+
+                                        <TextBlock Grid.Column="3" Text="Check For Updates"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="#CCCCCC" />
+
+                                        <CheckBox Grid.Column="4"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding SettingsService.Current.IsCheckForUpdatesEnabled, Mode=TwoWay}" />
+
                                 </Grid>
                         </Border>
 

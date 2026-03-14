@@ -8,21 +8,22 @@ public class Update {
     public string? LatestVersion { get; private set; } = null;
     public string? ReleaseNotes { get; private set; } = null;
     public ReleaseAsset? LatestAsset { get; private set; } = null;
+    public Release? LatestRelease { get; private set; } = null;
 
     private string _currentVersion;
     private string _repo;
     private string _owner;
 
     public Update() {
+        _repo = "ssh-agent-echo";
+        _owner = "totalretribution";
         var version = Assembly.GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         if (version == null) {
-            return;
+            _currentVersion = "0.0.0";
+        } else {
+            _currentVersion = version;
         }
-
-        _currentVersion = version;
-        _repo = "ssh-agent-echo";
-        _owner = "totalretribution";
     }
 
     public bool IsNewVersionAvailable() {
@@ -41,7 +42,7 @@ public class Update {
     }
 
     public string? GetReleaseURL() {
-        return LatestAsset?.Url;
+        return LatestRelease?.HtmlUrl;
     }
 
     public string? GetContentType() {
@@ -49,7 +50,7 @@ public class Update {
     }
 
     public DateTime? GetReleaseUTC() {
-        return LatestAsset?.CreatedAt.UtcDateTime;
+        return LatestRelease?.PublishedAt?.UtcDateTime;
     }
 
     public int? GetUpdateSize() {
@@ -80,12 +81,14 @@ public class Update {
                 throw new Exception("No suitable asset found for the current platform.");
             }
             LatestAsset = asset;
+            LatestRelease = latestRelease;
 
         } catch (Exception ex) {
             Log.Error($"An error occurred while checking for updates: {ex.Message}");
             LatestVersion = null;
             ReleaseNotes = null;
             LatestAsset = null;
+            LatestRelease = null;
         }
     }
 }

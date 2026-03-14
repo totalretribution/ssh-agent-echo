@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SshAgentEcho.Autostart {
+namespace SshAgentEcho.Gui.Autostart {
     public static class AutostartServiceFactory {
         public static IAutostartService Create(string appName) {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
