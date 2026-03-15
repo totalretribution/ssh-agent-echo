@@ -120,7 +120,7 @@ jobs:
           name: ${{ matrix.platform }}-binaries
           path: |
             ${{ matrix.artifact }}
-            publish/SshAgentEcho-Installer.exe
+            publish/SshAgentEcho-Installer*.exe
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
@@ -154,6 +154,6 @@ jobs:
             artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
             artifacts/linux-binaries/publish/*.deb
             artifacts/linux-binaries/publish/*.rpm
-            artifacts/windows-binaries/SshAgentEcho-Installer.exe
+            artifacts/windows-binaries/publish/SshAgentEcho-Installer*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
