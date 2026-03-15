@@ -109,7 +109,8 @@ jobs:
       - name: Generate Windows Installer
         if: matrix.platform == 'windows'
         shell: pwsh
-        run: makensis .\install.nsi
+        run: |
+          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" .\install.nsi
 
       - name: Upload artifact
         if: matrix.platform == 'windows'
