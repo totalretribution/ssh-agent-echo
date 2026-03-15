@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SSH Agent Echo
+Comment=SSH Agent Echo utility
+Exec=ssh-agent-echo-gui
+Icon=ssh-agent-echo
+Categories=Utility;System;
+Terminal=false

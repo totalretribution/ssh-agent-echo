@@ -20,46 +20,14 @@ EOF
 
 build_linux() {
   echo "🔧 Building Linux (linux-x64)..."
-  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
-  dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
-
-  dest="./.publish/linux"
-  mkdir -p "$dest"
-  src="src/SshAgentEcho.Cli/bin/Release/net10.0/linux-x64/publish/ssh-agent-echo"
-  if [ ! -f "$src" ]; then
-    echo "❌ Expected single-file executable not found: $src"
-    exit 1
-  fi
-  cp "$src" "$dest/"
-
-  src="src/SshAgentEcho.Gui/bin/Release/net10.0/linux-x64/publish/ssh-agent-echo-gui"
-  if [ ! -f "$src" ]; then
-    echo "❌ Expected single-file GUI executable not found: $src"
-    exit 1
-  fi
-  cp "$src" "$dest/"
+  dotnet publish -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
+  dotnet publish -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
 }
 
 build_windows() {
   echo "🔧 Building Windows (win-x64)..."
-  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
-  dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
-
-  dest="./.publish/windows"
-  mkdir -p "$dest"
-  src="src/SshAgentEcho.Cli/bin/Release/net10.0/win-x64/publish/ssh-agent-echo.exe"
-  if [ ! -f "$src" ]; then
-    echo "❌ Expected single-file executable not found: $src"
-    exit 1
-  fi
-  cp "$src" "$dest/"
-
-  src="src/SshAgentEcho.Gui/bin/Release/net10.0/win-x64/publish/ssh-agent-echo-gui.exe"
-  if [ ! -f "$src" ]; then
-    echo "❌ Expected single-file GUI executable not found: $src"
-    exit 1
-  fi
-  cp "$src" "$dest/"
+  dotnet publish -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
+  dotnet publish -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj
 }
 
 if [ "$#" -eq 0 ]; then

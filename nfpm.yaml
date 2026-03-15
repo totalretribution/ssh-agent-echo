@@ -1,0 +1,23 @@
+name: ssh-agent-echo
+arch: amd64
+platform: linux
+version: ${APP_VERSION}
+section: utils
+priority: optional
+maintainer: totalretribution
+description: A tool to synchronize SSH keys from a running SSH agent to your SSH config file. This is useful when you are using an SSH agent that loads keys from a remote source, such as 1Password, and you want to use those keys with tools that read the SSH config file directly.
+license: GPL-3.0
+homepage: https://github.com/totalretribution/ssh-agent-echo
+
+contents:
+  - src: ./publish/ssh-agent-echo
+    dst: /usr/bin/ssh-agent-echo
+
+  - src: ./publish/ssh-agent-echo-gui
+    dst: /usr/bin/ssh-agent-echo-gui
+
+  - src: ./Assets/ssh-agent-echo.desktop
+    dst: /usr/share/applications/ssh-agent-echo.desktop
+
+  - src: ./Assets/icon.svg
+    dst: /usr/share/pixmaps/ssh-agent-echo.svg
