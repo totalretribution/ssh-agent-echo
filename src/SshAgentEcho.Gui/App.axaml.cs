@@ -9,6 +9,7 @@ using System.Diagnostics;
 using SshAgentEcho.Core;
 using SshAgentEcho.Gui.Services;
 using SshAgentEcho.Gui.ViewModels;
+using SshAgentEcho.Gui.Notification;
 
 namespace SshAgentEcho.Gui;
 
@@ -50,7 +51,17 @@ public partial class App : Application {
             _syncService.SetInterval(settingsService.Current.SyncIntervalMinutes);
             _syncService.Start();
 
+            Updater updater = new Updater();
+            if (settingsService.Current.IsCheckForUpdatesEnabled) {
+                updater.Run();
+            }
+
+
 #if DEBUG
+            INotification _notificationService = NotificationFactory.Create();
+            string message = $"ssh-agent-echo test notification at {DateTime.Now}";
+            _notificationService.Notify("ssh-agent-echo", message, "Download", "https://www.google.com");
+
             // For debugging, open the settings window immediately
             _settingsWindow = new SettingsWindow(_mainViewModel);
             _settingsWindow.Closed += (_, _) => {
@@ -63,41 +74,11 @@ public partial class App : Application {
     }
 
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e) {
-
-        try {
-            // Unsubscribe from events BEFORE disposing to prevent UI updates during shutdown
-            if (_trayViewModel != null) {
-                _trayViewModel.Dispose();
-            }
-        } catch (Exception ex) {
-            Log.Error($"Error unsubscribing from events: {ex}");
-        }
-
-        try {
-            // Unsubscribe from events BEFORE disposing to prevent UI updates during shutdown
-            if (_mainViewModel != null) {
-                _mainViewModel.Dispose();
-            }
-        } catch (Exception ex) {
-            Log.Error($"Error unsubscribing from events: {ex}");
-        }
-
         try {
             _syncService.Dispose();
         } catch (Exception ex) {
             Log.Error($"Error during OnExit disposing SyncService: {ex}");
         }
-
-        try {
-            // Close the settings window if open
-            if (_settingsWindow != null) {
-                _settingsWindow.Close();
-                _settingsWindow = null;
-            }
-        } catch (Exception ex) {
-            Log.Error($"Error closing SettingsWindow during exit: {ex}");
-        }
-
         Log.Info("Application is exiting");
     }
 

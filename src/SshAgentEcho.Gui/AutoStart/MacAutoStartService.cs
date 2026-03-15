@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
-namespace SshAgentEcho.Autostart {
+namespace SshAgentEcho.Gui.Autostart {
     public class MacAutoStartService : IAutostartService {
         private readonly string _launchAgentsDirectory;
         private readonly string _appName;

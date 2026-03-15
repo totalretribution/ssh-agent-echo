@@ -26,10 +26,15 @@ class Program {
             Description = "Force sync even if CRC matches"
         };
 
+        Option<bool> updateOption = new("--update") {
+            Description = "Check for updates"
+        };
+
         RootCommand rootCommand = new("ssh-agent-echo - A tool to sync SSH agent public keys to ssh config");
         rootCommand.Options.Add(printOption);
         rootCommand.Options.Add(syncOption);
         rootCommand.Options.Add(forceOption);
+        rootCommand.Options.Add(updateOption);
 
         var version = Assembly.GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
@@ -42,6 +47,23 @@ class Program {
         Console.WriteLine(bar + "\n");
 
         rootCommand.SetAction(parseResult => {
+            bool isUpdate = parseResult.GetValue(updateOption);
+            if (isUpdate) {
+                var updateChecker = new Update();
+                updateChecker.Check().Wait();
+                if (updateChecker.IsNewVersionAvailable()) {
+                    Log.Info("A new version is available!");
+                    Log.Info($"Current version: {version}");
+                    Log.Info($"Latest version: {updateChecker.LatestVersion}");
+                    Log.Info($"Release URL: {updateChecker.GetReleaseURL()}");
+                    Log.Info($"Download URL: {updateChecker.GetDownloadUrl()}");
+                    // Log.Info($"Release notes: {updateChecker.ReleaseNotes}");
+                } else {
+                    Log.Info("You are using the latest version.");
+                }
+                return;
+            }
+
             bool isVerbose = parseResult.GetValue(printOption);
             if (isVerbose) {
                 var agent = new Agent();

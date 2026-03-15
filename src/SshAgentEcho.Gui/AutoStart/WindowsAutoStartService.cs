@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Win32;
 
-namespace SshAgentEcho.Autostart {
+namespace SshAgentEcho.Gui.Autostart {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class WindowsAutoStartService : IAutostartService {
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";

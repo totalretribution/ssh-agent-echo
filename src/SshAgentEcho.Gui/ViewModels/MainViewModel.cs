@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 using SshAgentEcho.Gui.Services;
-using SshAgentEcho.Autostart;
+using SshAgentEcho.Gui.Autostart;
 using System.Reflection;
 
 namespace SshAgentEcho.Gui.ViewModels {
