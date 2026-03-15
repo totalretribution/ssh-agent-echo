@@ -7,7 +7,11 @@ InstallDir "$LOCALAPPDATA\SshAgentEcho"
 Icon "Assets\icon.ico"
 UninstallIcon "Assets\icon.ico"
 
+!define MUI_FINISHPAGE_RUN "$INSTDIR\ssh-agent-echo-gui.exe"
+!define MUI_FINISHPAGE_RUN_CHECKED
+
 !insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
 Section "Install"
