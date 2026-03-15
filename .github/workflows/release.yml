@@ -97,12 +97,29 @@ jobs:
             )
             Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-win-x64.zip" -Force
 
+      - name: Install NSIS
+        if: matrix.platform == 'windows'
+        run: |
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop update
+          scoop bucket add extras
+          scoop install nsis
+
+      - name: Generate Windows Installer
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" .\install.nsi
+
       - name: Upload artifact
         if: matrix.platform == 'windows'
         uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-binaries
-          path: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}
+            publish/SshAgentEcho-Installer.exe
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
@@ -136,5 +153,6 @@ jobs:
             artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
             artifacts/linux-binaries/publish/*.deb
             artifacts/linux-binaries/publish/*.rpm
+            artifacts/windows-binaries/SshAgentEcho-Installer.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
