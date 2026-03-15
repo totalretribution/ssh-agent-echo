@@ -157,6 +157,6 @@ jobs:
             artifacts/linux-binaries/publish/*.deb
             artifacts/linux-binaries/publish/*.rpm
             artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
-            artifacts/windows-binaries/publish/SshAgentEcho-Installer*.exe
+            artifacts/windows-binaries/**/SshAgentEcho-Installer*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
