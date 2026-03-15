@@ -1,8 +1,12 @@
 ; Simple SSH Agent Echo Installer
 !include "MUI2.nsh"
 
+!ifndef VERSION
+  !define VERSION "debug"
+!endif
+
 Name "SSH Agent Echo"
-OutFile "publish\SshAgentEcho-Installer.exe"
+OutFile "publish\SshAgentEcho-Installer-${VERSION}.exe"
 InstallDir "$LOCALAPPDATA\SshAgentEcho"
 Icon "Assets\icon.ico"
 UninstallIcon "Assets\icon.ico"

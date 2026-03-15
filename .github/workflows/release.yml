@@ -110,7 +110,8 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" .\install.nsi
+          $version = (Select-String '<Version>([^<]+)</Version>' Directory.Build.props).Matches[0].Groups[1].Value
+          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" "/DVERSION=$version" .\install.nsi
 
       - name: Upload artifact
         if: matrix.platform == 'windows'
@@ -119,7 +120,7 @@ jobs:
           name: ${{ matrix.platform }}-binaries
           path: |
             ${{ matrix.artifact }}
-            publish/SshAgentEcho-Installer.exe
+            publish/SshAgentEcho-Installer*.exe
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
@@ -142,6 +143,9 @@ jobs:
         with:
           path: artifacts
 
+      - name: List artifacts
+        run: find artifacts -type f | head -20
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -150,9 +154,9 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/linux-binaries/ssh-agent-echo-linux-x64.tar.gz
-            artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
             artifacts/linux-binaries/publish/*.deb
             artifacts/linux-binaries/publish/*.rpm
-            artifacts/windows-binaries/SshAgentEcho-Installer.exe
+            artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
+            artifacts/windows-binaries/**/SshAgentEcho-Installer*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
