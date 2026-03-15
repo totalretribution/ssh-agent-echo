@@ -110,7 +110,8 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" .\install.nsi
+          $version = (Select-String '<Version>([^<]+)</Version>' Directory.Build.props).Matches[0].Groups[1].Value
+          & "$env:USERPROFILE\scoop\apps\nsis\current\makensis.exe" "/DVERSION=$version" .\install.nsi
 
       - name: Upload artifact
         if: matrix.platform == 'windows'
@@ -119,7 +120,7 @@ jobs:
           name: ${{ matrix.platform }}-binaries
           path: |
             ${{ matrix.artifact }}
-            "$PWD/publish/SshAgentEcho-Installer.exe"
+            publish/SshAgentEcho-Installer.exe
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
