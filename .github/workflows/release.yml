@@ -119,7 +119,7 @@ jobs:
           name: ${{ matrix.platform }}-binaries
           path: |
             ${{ matrix.artifact }}
-            SshAgentEcho-Installer.exe
+            publish/SshAgentEcho-Installer.exe
 
       - name: Upload artifact
         if: matrix.platform == 'linux'
