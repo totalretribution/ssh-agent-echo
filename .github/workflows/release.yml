@@ -59,10 +59,33 @@ jobs:
         if: matrix.platform == 'windows'
         run: dotnet publish -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj
 
-      - name: Package Linux binaries
+      - name: Compress Linux binaries
         if: matrix.platform == 'linux'
         run: |
           tar -czf ssh-agent-echo-linux-x64.tar.gz -C ./publish ssh-agent-echo-gui ssh-agent-echo
+
+      - name: Install nFPM
+        if: matrix.platform == 'linux'
+        run: |
+          NFPM_VERSION="2.35.3" # Replace with your preferred version
+          curl -L https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_x86_64.tar.gz | tar xz
+          sudo mv nfpm /usr/local/bin/
+
+      - name: Extract Version
+        if: matrix.platform == 'linux'
+        id: get_version
+        run: |
+          APP_VERSION=$(grep -oPm1 '(?<=<Version>)[^<]+' Directory.Build.props)
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "Detected version: $APP_VERSION"
+
+      - name: Generate Linux packages
+        if: matrix.platform == 'linux'
+        run: |
+          nfpm pkg --packager deb --target publish/
+          nfpm pkg --packager rpm --target publish/
+        env:
+          APP_VERSION: ${{ env.APP_VERSION }}
 
       - name: Package Windows Binaries
         if: matrix.platform == 'windows'
@@ -71,14 +94,25 @@ jobs:
           $files = @(
             "$PWD/publish/ssh-agent-echo-gui.exe",
             "$PWD/publish/ssh-agent-echo.exe"
-          )
-          Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-win-x64.zip" -Force
+            )
+            Compress-Archive -Path $files -DestinationPath "$PWD/ssh-agent-echo-win-x64.zip" -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-binaries
           path: ${{ matrix.artifact }}
+
+      - name: Upload artifact
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.platform }}-binaries
+          path: |
+            ${{ matrix.artifact }}
+            publish/*.deb
+            publish/*.rpm
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -100,5 +134,7 @@ jobs:
           files: |
             artifacts/linux-binaries/ssh-agent-echo-linux-x64.tar.gz
             artifacts/windows-binaries/ssh-agent-echo-win-x64.zip
+            artifacts/linux-binaries/publish/*.deb
+            artifacts/linux-binaries/publish/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

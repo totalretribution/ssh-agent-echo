@@ -43,32 +43,14 @@ If no option is provided, builds both Linux and Windows.
 
 function Build-Linux {
     Write-Host "🔧 Building Linux (linux-x64)..."
-    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj') -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj') -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-
-    $destDir = Join-Path $PSScriptRoot ".publish/linux"
-    # Use the published single-file executable from the `publish` folder
-    $src = Join-Path $PSScriptRoot "src\SshAgentEcho.Cli\bin\Release\net10.0\linux-x64\publish\ssh-agent-echo"
-    if (!(Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir | Out-Null }
-    Copy-Item -Path $src -Destination $destDir -Force
-    $src = Join-Path $PSScriptRoot "src\SshAgentEcho.Gui\bin\Release\net10.0\linux-x64\publish\ssh-agent-echo-gui"
-    if (!(Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir | Out-Null }
-    Copy-Item -Path $src -Destination $destDir -Force
+    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj') -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj') -c Release -o publish -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 }
 
 function Build-Windows {
     Write-Host "🔧 Building Windows (win-x64)..."
-    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj') -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj') -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-
-    $destDir = Join-Path $PSScriptRoot ".publish/windows"
-    # Use the published single-file executable from the `publish` folder
-    $src = Join-Path $PSScriptRoot "src\SshAgentEcho.Cli\bin\Release\net10.0\win-x64\publish\ssh-agent-echo.exe"
-    if (!(Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir | Out-Null }
-    Copy-Item -Path $src -Destination $destDir -Force
-    $src = Join-Path $PSScriptRoot "src\SshAgentEcho.Gui\bin\Release\net10.0\win-x64\publish\ssh-agent-echo-gui.exe"
-    if (!(Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir | Out-Null }
-    Copy-Item -Path $src -Destination $destDir -Force
+    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Cli/SshAgentEcho.Cli.csproj') -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+    & dotnet publish (Join-Path $PSScriptRoot 'src/SshAgentEcho.Gui/SshAgentEcho.Gui.csproj') -c Release -o publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 }
 
 if ($Help) {
