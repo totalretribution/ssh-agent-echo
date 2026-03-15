@@ -1,3 +1,4 @@
+#if LINUX
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace SshAgentEcho.Gui.Notification {
             }
         }
 
-        private async Task CreateToast(string appName, string appIcon, string summary, string body, int timeout = -1) {
+        private async Task CreateToast(string appName, string appIcon, string summary, string body, int timeout = 5000) {
             try {
                 // 1. Create a connection to the Session Bus
                 using var connection = new Connection(Address.Session);
@@ -58,20 +59,18 @@ namespace SshAgentEcho.Gui.Notification {
                     "org.freedesktop.Notifications",
                     "/org/freedesktop/Notifications");
 
-                uint notificationId = await proxy.NotifyAsync(
-                    appName,
-                    0,
-                    appIcon,
-                    summary,
-                    body,
-                    Array.Empty<string>(),
-                    new Dictionary<string, object>(),
-                    timeout
-                );
+                var hints = new Dictionary<string, object> {
+                    { "urgency", (byte)1 },        // normal
+                    { "category", "message" },     // KDE treats this as message
+                    { "desktop-entry", appName }   // optional
+                };
+
+                await proxy.NotifyAsync(appName, 0, appIcon, summary, body, Array.Empty<string>(), hints, timeout);
+
             } catch (Exception ex) {
                 throw new Exception($"{ex.Message}", ex);
             }
         }
-
     }
 }
+#endif

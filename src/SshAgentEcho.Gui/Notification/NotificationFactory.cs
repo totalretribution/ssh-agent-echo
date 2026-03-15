@@ -4,16 +4,16 @@ using System.Runtime.InteropServices;
 namespace SshAgentEcho.Gui.Notification {
     public static class NotificationFactory {
         public static INotification Create() {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+#if WINDOWS
                 return new WindowsNotification();
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+#elif LINUX
                 return new LinuxNotification();
-
-            // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+#elif MACOS
             //     return new MacNotification();
-
+#else
             throw new PlatformNotSupportedException();
+#endif
+
         }
     }
 }

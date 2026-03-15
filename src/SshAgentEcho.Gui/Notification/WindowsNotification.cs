@@ -1,3 +1,4 @@
+#if WINDOWS
 using Microsoft.Toolkit.Uwp.Notifications; // NuGet package
 using Windows.UI.Notifications; // Windows Runtime API
 using System.Runtime.InteropServices;
@@ -58,3 +59,4 @@ namespace SshAgentEcho.Gui.Notification {
         }
     }
 }
+#endif

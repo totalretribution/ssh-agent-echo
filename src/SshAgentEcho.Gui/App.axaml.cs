@@ -51,6 +51,12 @@ public partial class App : Application {
             _syncService.SetInterval(settingsService.Current.SyncIntervalMinutes);
             _syncService.Start();
 
+#if TEST_NOTIFICATION
+            INotification _notificationService = NotificationFactory.Create();
+            string message = $"A new version of ssh-agent-echo is available: v9.9.9";
+            _notificationService.Notify("ssh-agent-echo", message, "Download", "https://www.google.com");
+#endif
+
             Updater updater = new Updater();
             if (settingsService.Current.IsCheckForUpdatesEnabled) {
                 updater.Run();
