@@ -44,11 +44,13 @@ namespace SshAgentEcho.Gui.Notification {
             try {
                 var toastContent = new ToastContentBuilder()
                     .AddText(title)
-                    .AddText(message)
-                    .AddButton(new ToastButton()
-                    .SetContent(uri_text)
-                    .SetProtocolActivation(new Uri(uri)))
-                    .GetToastContent();
+                    .AddText(message);
+
+                if (uri_text != null && uri != null) {
+                    toastContent.AddArgument(uri_text, uri);
+                    toastContent.SetProtocolActivation(new Uri(uri));
+                }
+                toastContent.GetToastContent();
 
                 var toast = new ToastNotification(toastContent.GetXml());
 

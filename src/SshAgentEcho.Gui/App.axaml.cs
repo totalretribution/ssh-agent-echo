@@ -51,12 +51,6 @@ public partial class App : Application {
             _syncService.SetInterval(settingsService.Current.SyncIntervalMinutes);
             _syncService.Start();
 
-#if TEST_NOTIFICATION
-            INotification _notificationService = NotificationFactory.Create();
-            string message = $"A new version of ssh-agent-echo is available: v9.9.9";
-            _notificationService.Notify("ssh-agent-echo", message, "Download", "https://www.google.com");
-#endif
-
             Updater updater = new Updater();
             if (settingsService.Current.IsCheckForUpdatesEnabled) {
                 updater.Run();
@@ -64,6 +58,10 @@ public partial class App : Application {
 
 
 #if DEBUG
+            INotification _notificationService = NotificationFactory.Create();
+            string message = $"ssh-agent-echo test notification at {DateTime.Now}";
+            _notificationService.Notify("ssh-agent-echo", message, "Download", "https://www.google.com");
+
             // For debugging, open the settings window immediately
             _settingsWindow = new SettingsWindow(_mainViewModel);
             _settingsWindow.Closed += (_, _) => {
