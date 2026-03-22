@@ -21,8 +21,12 @@ public partial class App : Application {
             return;
         }
 
-        BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        try {
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        } catch (NullReferenceException ex) when (ex.StackTrace?.Contains("DBusMenu") == true || ex.StackTrace?.Contains("Tmds.DBus") == true) {
+            Console.WriteLine($"Suppressing DBus shutdown error: {ex.Message}");
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
