@@ -26,6 +26,10 @@ public partial class App : Application {
                 .StartWithClassicDesktopLifetime(args);
         } catch (NullReferenceException ex) when (ex.StackTrace?.Contains("DBusMenu") == true || ex.StackTrace?.Contains("Tmds.DBus") == true) {
             Console.WriteLine($"Suppressing DBus shutdown error: {ex.Message}");
+        } catch (Exception ex) {
+            Console.WriteLine($"Unhandled exception: {ex}");
+        } finally {
+            _mutex.ReleaseMutex();
         }
     }
 
