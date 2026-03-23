@@ -28,7 +28,7 @@ namespace SshAgentEcho.Gui.Autostart {
 [Desktop Entry]
 Type=Application
 Name={_appName}
-Exec=sleep 10 &&{quotedExec}
+Exec={quotedExec}
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true";

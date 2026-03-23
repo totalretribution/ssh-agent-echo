@@ -21,13 +21,13 @@ namespace SshAgentEcho.Gui.Services {
                     if (update.IsNewVersionAvailable()) {
                         string? url = update.GetReleaseURL();
                         if (!string.IsNullOrEmpty(url)) {
-                            string message = $"A new version of ssh-agent-echo is available: v{update.LatestVersion}";
+                            string message = $"A new version of ssh-agent-echo is available: v{update.GetLatestVersion()}";
                             INotification _notificationService = NotificationFactory.Create();
                             await _notificationService.NotifyAsync("ssh-agent-echo", message, "Download", url);
-                            Log.Info($"New version available: {update.LatestVersion}");
+                            Log.Info($"New version available: v{update.GetLatestVersion()}");
                         }
                     } else {
-                        Log.Info("No new version available.");
+                        Log.Info($"No new version available. Current version v{update.GetCurrentVersion()} is up to date.");
                     }
                 } catch (Exception ex) {
                     Log.Error($"Error checking for updates: {ex.Message}");

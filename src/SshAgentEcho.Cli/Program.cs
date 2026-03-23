@@ -53,8 +53,8 @@ class Program {
                 updateChecker.Check().Wait();
                 if (updateChecker.IsNewVersionAvailable()) {
                     Log.Info("A new version is available!");
-                    Log.Info($"Current version: {version}");
-                    Log.Info($"Latest version: {updateChecker.LatestVersion}");
+                    Log.Info($"Current version: {updateChecker.GetCurrentVersion()}");
+                    Log.Info($"Latest version: {updateChecker.GetLatestVersion()}");
                     Log.Info($"Release URL: {updateChecker.GetReleaseURL()}");
                     Log.Info($"Download URL: {updateChecker.GetDownloadUrl()}");
                     // Log.Info($"Release notes: {updateChecker.ReleaseNotes}");
