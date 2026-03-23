@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SshAgentEcho.Gui.Services;
@@ -15,6 +16,8 @@ public partial class SettingsWindow : Window {
 
     public SettingsWindow(MainViewModel mainViewModel) {
         InitializeComponent();
+        Version version = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 0, 0);
+        this.Title = "Settings - ssh-agent-echo v" + version.ToString(3);
         _mainViewModel = mainViewModel;
         DataContext = _mainViewModel;
     }

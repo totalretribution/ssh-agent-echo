@@ -5,33 +5,32 @@ using System.Reflection;
 namespace SshAgentEcho.Core;
 
 public class Update {
-    public string? LatestVersion { get; private set; } = null;
     public string? ReleaseNotes { get; private set; } = null;
     public ReleaseAsset? LatestAsset { get; private set; } = null;
     public Release? LatestRelease { get; private set; } = null;
 
-    private string _currentVersion;
+    private Version _latestVersion = new Version(0, 0, 0);
+    private Version _currentVersion = new Version(0, 0, 0);
     private string _repo;
     private string _owner;
 
     public Update() {
         _repo = "ssh-agent-echo";
         _owner = "totalretribution";
-        var version = Assembly.GetEntryAssembly()?
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+#if !DEBUG
+        var version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
         if (version == null) {
-            _currentVersion = "0.0.0";
+            _currentVersion = new Version(0, 0, 0);
         } else {
-            _currentVersion = version;
+            _currentVersion = Version.Parse(version);
         }
+#endif
     }
 
     public bool IsNewVersionAvailable() {
-        if (LatestVersion == null) return false;
+        if (_latestVersion == null) return false;
         try {
-            var current = Version.Parse(_currentVersion);
-            var latest = Version.Parse(LatestVersion);
-            return latest > current;
+            return _latestVersion > _currentVersion;
         } catch (Exception) {
             return false;
         }
@@ -57,6 +56,14 @@ public class Update {
         return LatestAsset?.Size;
     }
 
+    public string GetCurrentVersion() {
+        return _currentVersion.ToString(3);
+    }
+
+    public string GetLatestVersion() {
+        return _latestVersion.ToString(3);
+    }
+
     private ReleaseAsset? GetAsset(IReadOnlyList<ReleaseAsset>? assets = null) {
         if (assets == null) return null;
         string rid = RuntimeInformation.RuntimeIdentifier;
@@ -73,8 +80,7 @@ public class Update {
         try {
             Log.Info("Checking for updates...");
             var latestRelease = await client.Repository.Release.GetLatest(_owner, _repo);
-            var latestVersion = Version.Parse(latestRelease.TagName.TrimStart('v'));
-            LatestVersion = latestVersion.ToString();
+            _latestVersion = Version.Parse(latestRelease.TagName.TrimStart('v'));
             ReleaseNotes = latestRelease.Body;
             var asset = GetAsset(latestRelease.Assets);
             if (asset == null) {
@@ -85,7 +91,7 @@ public class Update {
 
         } catch (Exception ex) {
             Log.Error($"An error occurred while checking for updates: {ex.Message}");
-            LatestVersion = null;
+            _latestVersion = new Version(0, 0, 0);
             ReleaseNotes = null;
             LatestAsset = null;
             LatestRelease = null;
